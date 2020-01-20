@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  local:
+    build: .
+    volumes:
+      - .:/var/task
+    command: yarn start
+    expose:
+      - 3000
