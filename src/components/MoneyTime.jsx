@@ -127,7 +127,7 @@ function MoneyTime() {
     setUpdateTime(new Date(res.data.data[0].last_updated).toLocaleString());
   }
 
-  function handleBuyBuyBuy(e) {
+  function CalculateTotalPurchaseCost(e) {
     e.preventDefault();
     if (unitToBuy > 0) {
       let sum = 0;
@@ -138,6 +138,45 @@ function MoneyTime() {
       alert('Please enter some number to BuyBuyBuy~~~');
     }
   }
+
+  function handleBuyBuyBuy(e) {
+    e.preventDefault();
+    if (unitToBuy > 0) {
+
+      const index = transactions.findIndex(item => item.name === topTenCoins[selectedCoinId].name)
+      if (index === -1) {
+        const  newTransactions = [
+          ...transactions,
+          {
+            name: topTenCoins[selectedCoinId].name,
+            history: [{
+              unit: unitToBuy,
+              purchasePrice: topTenCoins[selectedCoinId].currentPrice
+            }]
+          }
+        ];
+        setTransactions(newTransactions);
+      } else {
+        const  newTransactionsPerType = {...transactions[index]};
+        newTransactionsPerType.history.push({
+          unit: unitToBuy,
+          purchasePrice: topTenCoins[selectedCoinId].currentPrice
+        })
+
+        const newTransactions = [
+          ...transactions.slice(0, index),
+          newTransactionsPerType,
+          ...transactions.slice(index + 1, transactions.length)
+        ];
+
+        setTransactions(newTransactions);
+      };
+
+    } else {
+      alert('Please enter some number to BuyBuyBuy~~~');
+    };
+
+  };
 
   const cardStyle = {
     display: 'grid',
@@ -172,7 +211,7 @@ function MoneyTime() {
                 <div style = { cardStyle } >
                   { transactions[tranIndex].history.map((tran, historyIndex) =>
                     <div className='card text-center' key={historyIndex}>
-                      <p>ID: { tran.id }</p>
+                      <p>ID: { tran.id || 'N/A' }</p>
                       <p>Unit: { tran.unit }</p>
                       <p>Purchase Price: { tran.purchasePrice }</p>
                       <p>Total Price: { tran.unit * tran.purchasePrice }</p>
@@ -214,7 +253,7 @@ function MoneyTime() {
           </label>
           <button
             className='primary alert-success'
-            onClick={(e) => handleBuyBuyBuy(e)}
+            onClick={(e) => CalculateTotalPurchaseCost(e)}
           >
             Calculate Total</button>
           <div>
