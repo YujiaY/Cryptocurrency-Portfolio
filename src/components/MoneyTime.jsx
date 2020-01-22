@@ -23,54 +23,58 @@ function MoneyTime() {
   const [unitToBuy, setUnitToBuy] = useState(0);
   const [updateTime, setUpdateTime] = useState('N/A')
   const [totalCostToBuy, setTotalCostToBuy] = useState(0);
-  const [transactions, setTransactions] = useState({
-    Bitcoin: [
-      {
-        id: 1,
-        unit: 1,
-        purchasePrice: 13000
-      },
-      {
-        id: 2,
-        unit: 3,
-        purchasePrice: 12000
-      },
-      {
-        id: 3,
-        unit: 5,
-        purchasePrice: 11000
-      }
-    ],
-    Ethereum: [
-      {
-        id: 4,
-        unit: 1,
-        purchasePrice: 800
-      },
-      {
-        id: 5,
-        unit: 2,
-        purchasePrice: 600
-      },
-      {
-        id: 6,
-        unit: 3,
-        purchasePrice: 500
-      }
-    ]
-  });
+  const [transactions, setTransactions] = useState([
+    {
+      name: 'Bitcoin',
+      history: [
+        {
+          id: 1,
+          unit: 1,
+          purchasePrice: 13000
+        },
+        {
+          id: 2,
+          unit: 3,
+          purchasePrice: 12000
+        },
+        {
+          id: 3,
+          unit: 5,
+          purchasePrice: 11000
+        }]
+    },
+    {
+      name: 'Ethereum',
+      history: [
+        {
+          id: 4,
+          unit: 1,
+          purchasePrice: 800
+        },
+        {
+          id: 5,
+          unit: 2,
+          purchasePrice: 600
+        },
+        {
+          id: 6,
+          unit: 3,
+          purchasePrice: 500
+        }]
+    }
+  ]);
 
-  function calTotalUnitPerType (type)  {
+  function calTotalUnitPerType (index)  {
     let sum = 0;
-    transactions[type].forEach(tran => {
+    transactions[index].history.forEach(tran => {
       sum += tran.unit;
     });
     return sum;
   };
 
-  function calTotalPaidPerType (type)  {
+  function calTotalPaidPerType (index)  {
     let sum = 0;
-    transactions[type].forEach(tran => {
+    transactions[index].history.forEach(tran => {
       sum += tran.unit * tran.purchasePrice;
     });
     return sum;
@@ -78,9 +82,9 @@ function MoneyTime() {
 
   function calTotalOfAll() {
     let sum = 0;
-    if (Object.keys(transactions).length > 0) {
-      Object.keys(transactions).forEach(type => {
-        transactions[type].forEach(tran => {
+    if (transactions.length > 0) {
+      transactions.forEach((tran, index) => {
+        transactions[index].history.forEach(tran => {
           sum += tran.unit * tran.purchasePrice;
         });
       })
@@ -88,19 +92,18 @@ function MoneyTime() {
     return sum;
   };
 
-  function onDelete(type, index) {
-    const newTransactions = {
-      ...transactions,
-      [type]: [...transactions[type]]
-    };
+  function onDelete(tranIndex, historyIndex) {
+    const newTransactions =  [...transactions];
 
-    newTransactions[type].splice(index, 1);
+    newTransactions[tranIndex].history.splice(historyIndex, 1);
 
-    if (newTransactions[type].length === 0) {
-      delete newTransactions[type];
+    if (newTransactions[tranIndex].history.length === 0) {
+      newTransactions.splice(tranIndex, 1);
     };
 
     setTransactions(newTransactions);
+    console.log(transactions)
+    // console.log(historyIndex)
   };
 
   async function fetchCryptoAPI(e) {
@@ -158,21 +161,22 @@ function MoneyTime() {
         <div className="col">
           <div className="alert alert-success" role='alert'>
             <p>Total Money you have paid: A${calTotalOfAll()}. Transactions History:</p>
-            {Object.keys(transactions).map((type) =>
-              <div key={type}>
+            {transactions.map((item, tranIndex) =>
+              <div key={tranIndex}>
                 <h4 className='text-center'>
-                  {type} Unit Owned: { calTotalUnitPerType(type) },
-                  Total Paid: { calTotalPaidPerType(type) }
+                  Coin Type: {transactions[tranIndex].name},
+                  Unit Owned: { calTotalUnitPerType(tranIndex) },
+                  Total Paid: { calTotalPaidPerType(tranIndex) }
                 </h4>
 
                 <div style = { cardStyle } >
-                  { transactions[type].map((tran, index) =>
-                    <div className='card text-center' key={index}>
+                  { transactions[tranIndex].history.map((tran, historyIndex) =>
+                    <div className='card text-center' key={historyIndex}>
                       <p>ID: { tran.id }</p>
                       <p>Unit: { tran.unit }</p>
                       <p>Purchase Price: { tran.purchasePrice }</p>
                       <p>Total Price: { tran.unit * tran.purchasePrice }</p>
-                      <button className='alert alert-danger' onClick={() => onDelete(type, index)}>Delete</button>
+                      <button className='alert alert-danger' onClick={() => onDelete(tranIndex, historyIndex)}>Delete</button>
                     </div>
                   )}
                 </div>
