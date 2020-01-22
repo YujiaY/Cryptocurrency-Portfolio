@@ -27,16 +27,43 @@ app.get('/api', (req, res) => {
 
   rp(requestOptions).then(response => {
 
-    console.log('API call responsed.');
+    console.log('Latest API call responsed.');
     return res.status(200).json({
       success: true,
       data: response.data
     });
   }).catch((err) => {
-    console.log('API call error:', err.message);
+    console.log('Latest API call error:', err.message);
   });
 
 });
+
+app.get('/current', (req, res) => {
+  const requestOptions = {
+    method: 'GET',
+    uri: 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest',
+    qs: {
+      'id': req.query.idArr,
+      'convert': 'AUD'
+    },
+    headers: {
+      'X-CMC_PRO_API_KEY': process.env.CMC_API_KEY
+    },
+    json: true,
+    gzip: true
+  };
+
+  rp(requestOptions).then(response => {
+
+    console.log('Update API call responsed.');
+    return res.status(200).json({
+      success: true,
+      data: response.data
+    });
+  }).catch((err) => {
+    console.log('Update API call error:', err.message);
+  });
+})
 
 
 const port = process.env.PORT || 1368

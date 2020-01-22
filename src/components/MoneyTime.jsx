@@ -8,57 +8,56 @@ function MoneyTime() {
   // Set dummy data for dev and test
   // TODO: Use MongoDB Atlas as data source.
   const [topTenCoins, setTopTenCoins] = useState([
-    {name: 'Bitcoin', currentPrice: 12628.123 },
-    {name: 'Ethereum',  currentPrice: 244.863 },
-    {name: 'XRP', currentPrice: 0.344 },
-    {name: 'Bitcoin Cash', currentPrice: 500.125 },
-    {name: 'Bitcoin SV', currentPrice: 459.981 } ,
-    {name: 'Tether', currentPrice: 1.459 },
-    {name: 'Litecoin', currentPrice: 84.060 } ,
-    {name: 'EOS', currentPrice: 5.338 } ,
-    {name: 'Binance Coin', currentPrice: 25.534 },
-    {name: 'Stellar', currentPrice: 0.091 }
+    {name: 'Bitcoin', id: 1,currentPrice: 12628.123 },
+    {name: 'Ethereum', id: 1027, currentPrice: 244.863 },
+    {name: 'XRP', id: 52, currentPrice: 0.344 },
+    {name: 'Bitcoin Cash', id: 1831, currentPrice: 500.125 },
+    {name: 'Bitcoin SV', id: 3602, currentPrice: 459.981 } ,
+    {name: 'Tether', id: 825, currentPrice: 1.459 },
+    {name: 'Litecoin', id: 2, currentPrice: 84.060 } ,
+    {name: 'EOS', id: 1765, currentPrice: 5.338 } ,
+    {name: 'Binance Coin', id: 1839, currentPrice: 25.534 },
+    {name: 'Stellar', id: 512, currentPrice: 0.091 }
   ]);
   const [selectedCoinId, setSelectedCoinId] = useState(0);
   const [unitToBuy, setUnitToBuy] = useState(0);
   const [updateTime, setUpdateTime] = useState('N/A')
+  const [currentValueOfAll, setCurrentValueOfAll] = useState('N/A')
   const [totalCostToBuy, setTotalCostToBuy] = useState(0);
   const [transactions, setTransactions] = useState([
     {
       name: 'Bitcoin',
+      id: 1,
+      currentPrice: null,
       history: [
         {
-          id: 1,
           unit: 1,
           purchasePrice: 13000
         },
         {
-          id: 2,
-          unit: 3,
+          unit: 2,
           purchasePrice: 12000
         },
         {
-          id: 3,
-          unit: 5,
+          unit: 3,
           purchasePrice: 11000
         }]
     },
     {
       name: 'Ethereum',
+      id: 1027,
+      currentPrice: null,
       history: [
         {
-          id: 4,
-          unit: 1,
+          unit: 4,
           purchasePrice: 800
         },
         {
-          id: 5,
-          unit: 2,
+          unit: 5,
           purchasePrice: 600
         },
         {
-          id: 6,
-          unit: 3,
+          unit: 6,
           purchasePrice: 500
         }]
     }
@@ -67,7 +66,7 @@ function MoneyTime() {
   function calTotalUnitPerType (index)  {
     let sum = 0;
     transactions[index].history.forEach(tran => {
-      sum += tran.unit;
+      sum += +tran.unit;
     });
     return sum;
   };
@@ -80,17 +79,41 @@ function MoneyTime() {
     return sum;
   };
 
-  function calTotalOfAll() {
+  function calTotalCostOfAll() {
     let sum = 0;
     if (transactions.length > 0) {
-      transactions.forEach((tran, index) => {
-        transactions[index].history.forEach(tran => {
+      transactions.forEach(tran => {
+        tran.history.forEach(tran => {
           sum += tran.unit * tran.purchasePrice;
         });
       })
     }
     return sum;
   };
+
+  async function calCurrentValueOfAll(e) {
+    e.preventDefault();
+    if (transactions.length > 0) {
+      let sum = 0;
+      let idArr = [];
+      transactions.forEach(tran => {
+        console.log(tran.id)
+        idArr.push(tran.id);
+      });
+      console.log(idArr);
+
+      // Fetch current value
+      const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
+
+      let data = res.data.data;
+      transactions.forEach((tran, index) => {
+        tran.currentPrice = data[tran.id].quote.AUD.price;
+        sum += calTotalUnitPerType(index) * tran.currentPrice;
+      });
+
+      setCurrentValueOfAll(sum);
+    }
+  }
 
   function onDelete(tranIndex, historyIndex) {
     const newTransactions =  [...transactions];
@@ -120,8 +143,9 @@ function MoneyTime() {
     let newTopTenCoins = [];
     res.data.data.forEach(item => {
       let name = item.name;
+      let id = item.id;
       let currentPrice = item.quote.AUD.price;
-      newTopTenCoins.push({name, currentPrice});
+      newTopTenCoins.push({name, id, currentPrice});
     });
     setTopTenCoins(newTopTenCoins);
     setUpdateTime(new Date(res.data.data[0].last_updated).toLocaleString());
@@ -143,12 +167,15 @@ function MoneyTime() {
     e.preventDefault();
     if (unitToBuy > 0) {
 
+      // Add transaction record into History
       const index = transactions.findIndex(item => item.name === topTenCoins[selectedCoinId].name)
+      // Check whether have purchased this type of crypto
       if (index === -1) {
         const  newTransactions = [
           ...transactions,
           {
             name: topTenCoins[selectedCoinId].name,
+            id: topTenCoins[selectedCoinId].id,
             history: [{
               unit: unitToBuy,
               purchasePrice: topTenCoins[selectedCoinId].currentPrice
@@ -195,32 +222,12 @@ function MoneyTime() {
         </div>
       </div>
 
-      {/*Transaction History*/}
       <div className="row">
         <div className="col">
           <div className="alert alert-success" role='alert'>
-            <p>Total Money you have paid: A${calTotalOfAll()}. Transactions History:</p>
-            {transactions.map((item, tranIndex) =>
-              <div key={tranIndex}>
-                <h4 className='text-center'>
-                  Coin Type: {transactions[tranIndex].name},
-                  Unit Owned: { calTotalUnitPerType(tranIndex) },
-                  Total Paid: { calTotalPaidPerType(tranIndex) }
-                </h4>
-
-                <div style = { cardStyle } >
-                  { transactions[tranIndex].history.map((tran, historyIndex) =>
-                    <div className='card text-center' key={historyIndex}>
-                      <p>ID: { tran.id || 'N/A' }</p>
-                      <p>Unit: { tran.unit }</p>
-                      <p>Purchase Price: { tran.purchasePrice }</p>
-                      <p>Total Price: { tran.unit * tran.purchasePrice }</p>
-                      <button className='alert alert-danger' onClick={() => onDelete(tranIndex, historyIndex)}>Delete</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
+            <p>And your assets are now worth: A${currentValueOfAll}. </p>
+            <button  className='primary alert-primary'  onClick={event => calCurrentValueOfAll(event)}>Update Prices</button>
           </div>
         </div>
       </div>
@@ -231,6 +238,7 @@ function MoneyTime() {
           {topTenCoins.map((coin, index) =>
             <li key={index}>
               Name: {topTenCoins[index].name}.
+              ID: {topTenCoins[index].id}.
               Current Price: { topTenCoins[index].currentPrice || 'Not available. Please update.'}
             </li>
           )}
@@ -264,6 +272,31 @@ function MoneyTime() {
               BuyBuyBuy</button>
           </div>
         </form>
+      </div>
+
+      {/*Transaction History*/}
+      <div className="alert alert-success" role='alert'>
+        <p>Transactions History:</p>
+        {transactions.map((item, tranIndex) =>
+          <div key={tranIndex}>
+            <h4 className='text-center'>
+              Coin Type: {transactions[tranIndex].name},
+              Unit Owned: { calTotalUnitPerType(tranIndex) },
+              Total Paid: { calTotalPaidPerType(tranIndex) }
+            </h4>
+
+            <div style = { cardStyle } >
+              { transactions[tranIndex].history.map((tran, historyIndex) =>
+                <div className='card text-center' key={historyIndex}>
+                  <p>Unit: { tran.unit }</p>
+                  <p>Purchase Price: { tran.purchasePrice }</p>
+                  <p>Total Price: { tran.unit * tran.purchasePrice }</p>
+                  <button className='alert alert-danger' onClick={() => onDelete(tranIndex, historyIndex)}>Delete</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
