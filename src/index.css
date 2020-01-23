@@ -13,31 +13,44 @@ code {
   monospace;
 }
 
-/* Global Styles */
-:root {
-  --light-color: #f4f4f4;
-}
-
 p {
   margin: 0;
 }
 
 /* Cards */
+.card-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border: 1px solid silver;
+  -ms-box-orient: horizontal;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -moz-flex;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+}
 .card {
+  display: inline-block;
   padding: 1rem;
+  min-width: 200px;
+  height: 272px;
   border: #ccc 1px dotted;
   margin: 0.7rem 0;
 }
 
 .btn {
-  display: inline-block;
-  background: var(--light-color);
+  display: block;
+  background: #f4f4f4;
   color: #333;
   padding: 0.4rem 1.3rem;
   font-size: 1rem;
   border: none;
   cursor: pointer;
-  margin-right: 0.5rem;
-  transition: opacity 0.2s ease-in;
+  margin: 0.5rem auto;
   outline: none;
 }

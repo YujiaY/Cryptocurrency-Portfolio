@@ -8,16 +8,16 @@ function MoneyTime() {
   // Set dummy data for dev and test
   // TODO: Use MongoDB Atlas as data source.
   const [topTenCoins, setTopTenCoins] = useState([
-    {name: 'Bitcoin', id: 1,currentPrice: 12628.123 },
-    {name: 'Ethereum', id: 1027, currentPrice: 244.863 },
-    {name: 'XRP', id: 52, currentPrice: 0.344 },
-    {name: 'Bitcoin Cash', id: 1831, currentPrice: 500.125 },
-    {name: 'Bitcoin SV', id: 3602, currentPrice: 459.981 } ,
-    {name: 'Tether', id: 825, currentPrice: 1.459 },
-    {name: 'Litecoin', id: 2, currentPrice: 84.060 } ,
-    {name: 'EOS', id: 1765, currentPrice: 5.338 } ,
-    {name: 'Binance Coin', id: 1839, currentPrice: 25.534 },
-    {name: 'Stellar', id: 512, currentPrice: 0.091 }
+    {name: 'Bitcoin', id: 1,currentPrice: 12647.058451682824 },
+    {name: 'Ethereum', id: 1027, currentPrice: 245.17382970904882 },
+    {name: 'XRP', id: 52, currentPrice: 0.3435530530220539 },
+    {name: 'Bitcoin Cash', id: 1831, currentPrice: 503.2941101748042 },
+    {name: 'Bitcoin SV', id: 3602, currentPrice: 462.13046736163125 } ,
+    {name: 'Tether', id: 825, currentPrice: 1.4612764487611172 },
+    {name: 'Litecoin', id: 2, currentPrice: 84.80672594810672 } ,
+    {name: 'EOS', id: 1765, currentPrice: 5.311233640081649 } ,
+    {name: 'Binance Coin', id: 1839, currentPrice: 25.819805795833606 },
+    {name: 'Stellar', id: 512, currentPrice: 0.09170290621192892 }
   ]);
   // For editing transactions
   const [isEditing, setIsEditing] = useState(false);
@@ -43,15 +43,14 @@ function MoneyTime() {
       history: [
         {
           unit: 1,
-          purchasePrice: 13000
-        },
+          purchasePrice: 13000.058451682824,},
         {
           unit: 2,
-          purchasePrice: 12000
+          purchasePrice: 12000.058451682824
         },
         {
           unit: 3,
-          purchasePrice: 11000
+          purchasePrice: 11000.058451682824
         }]
     },
     {
@@ -61,15 +60,15 @@ function MoneyTime() {
       history: [
         {
           unit: 4,
-          purchasePrice: 800
+          purchasePrice: 800.17382970904882
         },
         {
           unit: 5,
-          purchasePrice: 600
+          purchasePrice: 600.17382970904882
         },
         {
           unit: 6,
-          purchasePrice: 500
+          purchasePrice: 500.17382970904882
         }]
     }
   ]);
@@ -252,12 +251,6 @@ function MoneyTime() {
 
   };
 
-  const cardStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(5, 1fr)',
-    gridGap: '1rem'
-  }
-
   return (
     <div className="container">
       <div className="row">
@@ -274,13 +267,20 @@ function MoneyTime() {
           <div className="alert alert-success" role='alert'>
             <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
             <p>And your assets are now worth: A${currentValueOfAll}. </p>
-            <button  className='primary alert-primary'  onClick={event => calCurrentValueOfAll(event)}>Update Current Value</button>
+            <button
+              className='primary alert-primary'
+              onClick={event => calCurrentValueOfAll(event)}
+            >Update Current Value</button>
           </div>
         </div>
       </div>
       {/*Top ten coins*/}
       <div>
-        <h3>Top Ten Coins: (Last update at: {updateTime})</h3><button  className='primary alert-primary'  onClick={(e) => fetchCryptoAPI(e)}>Update coins and prices</button>
+        <h3>Top Ten Coins: (Last update at: {updateTime})</h3>
+        <button
+          className='primary alert-primary'
+          onClick={(e) => fetchCryptoAPI(e)}
+        >Update coins and prices</button>
         <ol>
           {topTenCoins.map((coin, index) =>
             <li key={index}>
@@ -295,28 +295,24 @@ function MoneyTime() {
       {/*  FORM */}
       <div>
         <form onSubmit={(e) => handleBuyBuyBuy(e)}>
-          <label>
-            <p>Pick your favorite Coin:</p>
-            <select value={selectedCoinId} onChange={e => setSelectedCoinId(e.target.value)}>
-              {topTenCoins.map((coin, index) =>
-                <option key={index} value = {index}>{topTenCoins[index].name}</option>
-              )}
-            </select>
-            <label>Unit to buy: </label>
-            <input type="number" name="unit" onChange={e => setUnitToBuy(e.target.value)}/>
-            <label>TotalCostToBuy: {totalCostToBuy}</label>
-          </label>
+          <p>Pick your favorite Coin:</p>
+          <select value={selectedCoinId} onChange={e => setSelectedCoinId(e.target.value)}>
+            {topTenCoins.map((coin, index) =>
+              <option key={index} value = {index}>{topTenCoins[index].name}</option>
+            )}
+          </select>
+          <label>Unit to buy: </label>
+          <input type="number" name="unit" onChange={e => setUnitToBuy(e.target.value)}/>
           <button
-            className='primary alert-success'
+            className='alert alert-success'
             onClick={(e) => CalculateTotalPurchaseCost(e)}
-          >
-            Calculate Total</button>
+          >Calculate Total</button>
+          <label>TotalCostToBuy: {totalCostToBuy}</label>
           <div>
             <button
               className='alert alert-danger'
               type="submit"
-            >
-              BuyBuyBuy</button>
+            >BuyBuyBuy</button>
           </div>
         </form>
       </div>
@@ -332,52 +328,59 @@ function MoneyTime() {
               Total Paid: { calTotalPaidPerType(tranIndex) }
             </h4>
 
-            <div style = { cardStyle } >
-              { transactions[tranIndex].history.map((tran, historyIndex) =>
-                <div className='card text-center' key={historyIndex}>
+            <div className="card-row">
+              <div className="card-container" >
+                { transactions[tranIndex].history.map((tran, historyIndex) =>
+                  <div className='card text-center' key={historyIndex}>
 
-                  { (tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1]) ?
+                    { (tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1]) ?
 
-                    // Render edit mode:
-                    <div>
-                      <label>Unit: </label>
-                      <input
-                        type= "number"
-                        value={ unitToEdit }
-                        onChange={handleFormUnitChange}
-                      />
-                      <label htmlFor={ tran.purchasePrice }>Purchase Price: </label>
-                      <input
-                        type= "number"
-                        value={ priceToEdit }
-                        onChange={handleFormPriceChange}
+                      // Render edit mode:
+                      <div>
+                        <p>Unit: </p>
+                        <input
+                          type= "number"
+                          value={ unitToEdit }
+                          onChange={handleFormUnitChange}
+                        />
+                        <p>Purchase Price: </p>
+                        <input
+                          type= "number"
+                          value={ priceToEdit }
+                          onChange={handleFormPriceChange}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => onSave(tranIndex, historyIndex)}
+                        >Save</button>
+                      </div>
+                      :
+                      //  Render normal mode:
+                      <div>
+                        <p>Unit: { tran.unit }</p>
+                        <p>Purchase Price: </p>
+                        <p>{ tran.purchasePrice }</p>
+                        <p>Total Price: </p>
+                        <p>{ tran.unit * tran.purchasePrice }</p>
+                        <button
+                          type="button"
+                          className="alert alert-danger"
+                          onClick={() => onDelete(tranIndex, historyIndex)}
+                        >Delete</button>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => onEdit(tranIndex, historyIndex)}
+                        >Edit</button>
+                      </div>
 
-                      />
-                      <button type="button" className="btn btn-primary" onClick={() => onSave(tranIndex, historyIndex)}>Save</button>
-                    </div>
-                    :
-                    //  Render normal mode:
-                    <div>
-                      <p>Unit: { tran.unit }</p>
-                      <p>Purchase Price: { tran.purchasePrice }</p>
-                      <p>Total Price: { tran.unit * tran.purchasePrice }</p>
-                      <button
-                        type="button"
-                        className="alert alert-danger"
-                        onClick={() => onDelete(tranIndex, historyIndex)}
-                      >Delete</button>
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={() => onEdit(tranIndex, historyIndex)}
-                      >Edit</button>
-                    </div>
 
+                    }
 
-                  }
-
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
