@@ -19,11 +19,22 @@ function MoneyTime() {
     {name: 'Binance Coin', id: 1839, currentPrice: 25.534 },
     {name: 'Stellar', id: 512, currentPrice: 0.091 }
   ]);
+  // For editing transactions
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingCardIndex, setEditingCardIndex] = useState([-1, -1]);
+  const [unitToEdit, setUnitToEdit] = useState(null);
+  const [priceToEdit, setPriceToEdit] = useState(null);
+
+  // For selecting and purchasing coins
   const [selectedCoinId, setSelectedCoinId] = useState(0);
   const [unitToBuy, setUnitToBuy] = useState(0);
-  const [updateTime, setUpdateTime] = useState('N/A')
-  const [currentValueOfAll, setCurrentValueOfAll] = useState('N/A')
   const [totalCostToBuy, setTotalCostToBuy] = useState(0);
+
+  // For updating current value
+  const [updateTime, setUpdateTime] = useState('N/A');
+  const [currentValueOfAll, setCurrentValueOfAll] = useState('N/A');
+
+  // All Transaction History (with test data);
   const [transactions, setTransactions] = useState([
     {
       name: 'Bitcoin',
@@ -125,9 +136,45 @@ function MoneyTime() {
     };
 
     setTransactions(newTransactions);
-    console.log(transactions)
-    // console.log(historyIndex)
   };
+
+  function onSave(tranIndex, historyIndex) {
+    console.log(tranIndex);
+    console.log(historyIndex);
+    //
+    const newTransactions =  [...transactions];
+    console.log(newTransactions)
+    newTransactions[tranIndex].history[historyIndex].unit = unitToEdit;
+    newTransactions[tranIndex].history[historyIndex].purchasePrice = priceToEdit;
+    setTransactions(newTransactions);
+
+    // Roll back to normal mode
+    setIsEditing(false)
+    setEditingCardIndex([-1, -1]);
+
+  };
+
+  function onEdit(tranIndex, historyIndex) {
+    console.log(tranIndex);
+    console.log(historyIndex);
+    if (isEditing)
+      return alert('Please only edit one in a time.')
+
+    setIsEditing(true);
+    setEditingCardIndex([tranIndex, historyIndex]);
+
+    setUnitToEdit(transactions[tranIndex].history[historyIndex].unit);
+    setPriceToEdit(transactions[tranIndex].history[historyIndex].purchasePrice);
+
+  };
+
+  function handleFormUnitChange(e) {
+    setUnitToEdit(e.target.value);
+  }
+  function handleFormPriceChange(e) {
+    setPriceToEdit(e.target.value);
+  }
+
 
   async function fetchCryptoAPI(e) {
     e.preventDefault();
@@ -227,7 +274,7 @@ function MoneyTime() {
           <div className="alert alert-success" role='alert'>
             <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
             <p>And your assets are now worth: A${currentValueOfAll}. </p>
-            <button  className='primary alert-primary'  onClick={event => calCurrentValueOfAll(event)}>Update Prices</button>
+            <button  className='primary alert-primary'  onClick={event => calCurrentValueOfAll(event)}>Update Current Value</button>
           </div>
         </div>
       </div>
@@ -288,10 +335,47 @@ function MoneyTime() {
             <div style = { cardStyle } >
               { transactions[tranIndex].history.map((tran, historyIndex) =>
                 <div className='card text-center' key={historyIndex}>
-                  <p>Unit: { tran.unit }</p>
-                  <p>Purchase Price: { tran.purchasePrice }</p>
-                  <p>Total Price: { tran.unit * tran.purchasePrice }</p>
-                  <button className='alert alert-danger' onClick={() => onDelete(tranIndex, historyIndex)}>Delete</button>
+
+                  { (tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1]) ?
+
+                    // Render edit mode:
+                    <div>
+                      <label>Unit: </label>
+                      <input
+                        type= "number"
+                        value={ unitToEdit }
+                        onChange={handleFormUnitChange}
+                      />
+                      <label htmlFor={ tran.purchasePrice }>Purchase Price: </label>
+                      <input
+                        type= "number"
+                        value={ priceToEdit }
+                        onChange={handleFormPriceChange}
+
+                      />
+                      <button type="button" className="btn btn-primary" onClick={() => onSave(tranIndex, historyIndex)}>Save</button>
+                    </div>
+                    :
+                    //  Render normal mode:
+                    <div>
+                      <p>Unit: { tran.unit }</p>
+                      <p>Purchase Price: { tran.purchasePrice }</p>
+                      <p>Total Price: { tran.unit * tran.purchasePrice }</p>
+                      <button
+                        type="button"
+                        className="alert alert-danger"
+                        onClick={() => onDelete(tranIndex, historyIndex)}
+                      >Delete</button>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => onEdit(tranIndex, historyIndex)}
+                      >Edit</button>
+                    </div>
+
+
+                  }
+
                 </div>
               )}
             </div>
