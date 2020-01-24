@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
+import NormalCard from './NormalCard';
+import EditCard from './EditCard';
+
 require('dotenv').config();
 
 function MoneyTime() {
@@ -337,56 +340,34 @@ function MoneyTime() {
               Total Paid: { calTotalPaidPerType(tranIndex) }
             </h4>
 
-            <div className="card-row">
-              <div className="card-container" >
-                { transactions[tranIndex].history.map((tran, historyIndex) =>
-                  <div className='card text-center' key={historyIndex}>
+            <div className="card-container" >
 
-                    { (tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1]) ?
+              {/* Loop in all types of coins*/}
+              { transactions[tranIndex].history.map((tran, historyIndex) =>
+                <div className='card text-center' key={historyIndex}>
 
-                      // Render edit mode:
-                      <div>
-                        <p>Unit: </p>
-                        <input
-                          type= "number"
-                          value={ unitToEdit }
-                          onChange={handleFormUnitChange}
-                        />
-                        <p>Purchase Price: </p>
-                        <input
-                          type= "number"
-                          value={ priceToEdit }
-                          onChange={handleFormPriceChange}
+                  {/* Loop in all trans records in each coin*/}
+                  {(tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1]) ?
 
-                        />
-                        <button type="button" className="btn btn-primary" onClick={() => onSave(tranIndex, historyIndex)}>Save</button>
-                      </div>
-                      :
-                      //  Render normal mode:
-                      <div>
-                        <p>Unit: { tran.unit }</p>
-                        <p>Purchase Price: </p>
-                        <p>{ tran.purchasePrice }</p>
-                        <p>Total Price: </p>
-                        <p>{ tran.unit * tran.purchasePrice }</p>
-                        <button
-                          type="button"
-                          className="alert alert-danger"
-                          onClick={() => onDelete(tranIndex, historyIndex)}
-                        >Delete</button>
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          onClick={() => onEdit(tranIndex, historyIndex)}
-                        >Edit</button>
-                      </div>
-
-
-                    }
-
-                  </div>
-                )}
-              </div>
+                    // Render edit mode:
+                    <EditCard
+                      unitToEdit = {unitToEdit}
+                      priceToEdit = {priceToEdit}
+                      handleFormUnitChange = {(e) => handleFormUnitChange(e)}
+                      handleFormPriceChange = {(e) => handleFormPriceChange(e)}
+                      onSave = {() => onSave(tranIndex, historyIndex)}
+                    />
+                    :
+                    //  Render normal mode:
+                    <NormalCard
+                      unit = {tran.unit}
+                      purchasePrice = {tran.purchasePrice}
+                      onDelete = {() => onDelete(tranIndex, historyIndex)}
+                      onEdit = {() => onEdit(tranIndex, historyIndex)}
+                    />
+                  }
+                </div>
+              )}
             </div>
           </div>
         )}
