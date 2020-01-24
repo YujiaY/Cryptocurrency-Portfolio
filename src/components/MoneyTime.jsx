@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
 require('dotenv').config();
@@ -73,6 +73,17 @@ function MoneyTime() {
     }
   ]);
 
+  useEffect(() => {
+    fetchCryptoAPI()
+      .then(() => console.log('Latest API call responsed.'))
+  },[]);
+
+  useEffect(() => {
+    calCurrentValueOfAll()
+      .then(() => console.log('Update API call responsed.'));
+  }, [transactions]);
+
+
   function calTotalUnitPerType (index)  {
     let sum = 0;
     transactions[index].history.forEach(tran => {
@@ -101,8 +112,8 @@ function MoneyTime() {
     return sum;
   };
 
-  async function calCurrentValueOfAll(e) {
-    e.preventDefault();
+  async function calCurrentValueOfAll() {
+    // e.preventDefault();
     if (transactions.length > 0) {
       let sum = 0;
       let idArr = [];
@@ -175,8 +186,8 @@ function MoneyTime() {
   }
 
 
-  async function fetchCryptoAPI(e) {
-    e.preventDefault();
+  async function fetchCryptoAPI() {
+    // e.preventDefault();
     console.log('Fetching Crypto API...');
 
     // Below did not work very well since too many request in a shot time will let the app get banned
@@ -267,10 +278,7 @@ function MoneyTime() {
           <div className="alert alert-success" role='alert'>
             <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
             <p>And your assets are now worth: A${currentValueOfAll}. </p>
-            <button
-              className='primary alert-primary'
-              onClick={event => calCurrentValueOfAll(event)}
-            >Update Current Value</button>
+            <button  className='primary alert-primary'  onClick={calCurrentValueOfAll}>Update Current Value</button>
           </div>
         </div>
       </div>
@@ -279,8 +287,9 @@ function MoneyTime() {
         <h3>Top Ten Coins: (Last update at: {updateTime})</h3>
         <button
           className='primary alert-primary'
-          onClick={(e) => fetchCryptoAPI(e)}
-        >Update coins and prices</button>
+          onClick={fetchCryptoAPI}>
+          Update coins and prices
+        </button>
         <ol>
           {topTenCoins.map((coin, index) =>
             <li key={index}>
@@ -348,12 +357,9 @@ function MoneyTime() {
                           type= "number"
                           value={ priceToEdit }
                           onChange={handleFormPriceChange}
+
                         />
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          onClick={() => onSave(tranIndex, historyIndex)}
-                        >Save</button>
+                        <button type="button" className="btn btn-primary" onClick={() => onSave(tranIndex, historyIndex)}>Save</button>
                       </div>
                       :
                       //  Render normal mode:
