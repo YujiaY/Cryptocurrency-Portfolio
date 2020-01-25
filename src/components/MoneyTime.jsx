@@ -11,16 +11,16 @@ function MoneyTime() {
   // Set dummy data for dev and test
   // TODO: Use MongoDB Atlas as data source.
   const [topTenCoins, setTopTenCoins] = useState([
-    {name: 'Bitcoin', id: 1,currentPrice: 12647.058451682824 },
-    {name: 'Ethereum', id: 1027, currentPrice: 245.17382970904882 },
-    {name: 'XRP', id: 52, currentPrice: 0.3435530530220539 },
-    {name: 'Bitcoin Cash', id: 1831, currentPrice: 503.2941101748042 },
-    {name: 'Bitcoin SV', id: 3602, currentPrice: 462.13046736163125 } ,
-    {name: 'Tether', id: 825, currentPrice: 1.4612764487611172 },
-    {name: 'Litecoin', id: 2, currentPrice: 84.80672594810672 } ,
-    {name: 'EOS', id: 1765, currentPrice: 5.311233640081649 } ,
-    {name: 'Binance Coin', id: 1839, currentPrice: 25.819805795833606 },
-    {name: 'Stellar', id: 512, currentPrice: 0.09170290621192892 }
+    {name: 'Bitcoin', id: 1, currentPrice: 12647.058451682824},
+    {name: 'Ethereum', id: 1027, currentPrice: 245.17382970904882},
+    {name: 'XRP', id: 52, currentPrice: 0.3435530530220539},
+    {name: 'Bitcoin Cash', id: 1831, currentPrice: 503.2941101748042},
+    {name: 'Bitcoin SV', id: 3602, currentPrice: 462.13046736163125},
+    {name: 'Tether', id: 825, currentPrice: 1.4612764487611172},
+    {name: 'Litecoin', id: 2, currentPrice: 84.80672594810672},
+    {name: 'EOS', id: 1765, currentPrice: 5.311233640081649},
+    {name: 'Binance Coin', id: 1839, currentPrice: 25.819805795833606},
+    {name: 'Stellar', id: 512, currentPrice: 0.09170290621192892}
   ]);
   // For editing transactions
   const [isEditing, setIsEditing] = useState(false);
@@ -46,7 +46,8 @@ function MoneyTime() {
       history: [
         {
           unit: 1,
-          purchasePrice: 13000.058451682824,},
+          purchasePrice: 13000.058451682824,
+        },
         {
           unit: 2,
           purchasePrice: 12000.058451682824
@@ -79,7 +80,7 @@ function MoneyTime() {
   useEffect(() => {
     fetchCryptoAPI()
       .then(() => console.log('Latest API call responsed.'))
-  },[]);
+  }, []);
 
   useEffect(() => {
     calCurrentValueOfAll()
@@ -87,7 +88,7 @@ function MoneyTime() {
   }, [transactions]);
 
 
-  function calTotalUnitPerType (index)  {
+  function calTotalUnitPerType(index) {
     let sum = 0;
     transactions[index].history.forEach(tran => {
       sum += +tran.unit;
@@ -95,7 +96,7 @@ function MoneyTime() {
     return sum;
   };
 
-  function calTotalPaidPerType (index)  {
+  function calTotalPaidPerType(index) {
     let sum = 0;
     transactions[index].history.forEach(tran => {
       sum += tran.unit * tran.purchasePrice;
@@ -116,8 +117,9 @@ function MoneyTime() {
   };
 
   async function calCurrentValueOfAll() {
-    // e.preventDefault();
-    if (transactions.length > 0) {
+    if (transactions.length === 0) {
+      return setCurrentValueOfAll(0);
+    } else {
       let sum = 0;
       let idArr = [];
       transactions.forEach(tran => {
@@ -140,7 +142,7 @@ function MoneyTime() {
   }
 
   function onDelete(tranIndex, historyIndex) {
-    const newTransactions =  [...transactions];
+    const newTransactions = [...transactions];
 
     newTransactions[tranIndex].history.splice(historyIndex, 1);
 
@@ -155,7 +157,7 @@ function MoneyTime() {
     console.log(tranIndex);
     console.log(historyIndex);
     //
-    const newTransactions =  [...transactions];
+    const newTransactions = [...transactions];
     console.log(newTransactions)
     newTransactions[tranIndex].history[historyIndex].unit = unitToEdit;
     newTransactions[tranIndex].history[historyIndex].purchasePrice = priceToEdit;
@@ -184,6 +186,7 @@ function MoneyTime() {
   function handleFormUnitChange(e) {
     setUnitToEdit(e.target.value);
   }
+
   function handleFormPriceChange(e) {
     setPriceToEdit(e.target.value);
   }
@@ -211,7 +214,7 @@ function MoneyTime() {
     setUpdateTime(new Date(res.data.data[0].last_updated).toLocaleString());
   }
 
-  function CalculateTotalPurchaseCost(e) {
+  function calculateTotalPurchaseCost(e) {
     e.preventDefault();
     if (unitToBuy > 0) {
       let sum = 0;
@@ -231,7 +234,7 @@ function MoneyTime() {
       const index = transactions.findIndex(item => item.name === topTenCoins[selectedCoinId].name)
       // Check whether have purchased this type of crypto
       if (index === -1) {
-        const  newTransactions = [
+        const newTransactions = [
           ...transactions,
           {
             name: topTenCoins[selectedCoinId].name,
@@ -244,7 +247,7 @@ function MoneyTime() {
         ];
         setTransactions(newTransactions);
       } else {
-        const  newTransactionsPerType = {...transactions[index]};
+        const newTransactionsPerType = {...transactions[index]};
         newTransactionsPerType.history.push({
           unit: unitToBuy,
           purchasePrice: topTenCoins[selectedCoinId].currentPrice
@@ -257,11 +260,12 @@ function MoneyTime() {
         ];
 
         setTransactions(newTransactions);
-      };
+      }
+
 
     } else {
       alert('Please enter some number to BuyBuyBuy~~~');
-    };
+    }
 
   };
 
@@ -281,7 +285,7 @@ function MoneyTime() {
           <div className="alert alert-success" role='alert'>
             <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
             <p>And your assets are now worth: A${currentValueOfAll}. </p>
-            <button  className='primary alert-primary'  onClick={calCurrentValueOfAll}>Update Current Value</button>
+            <button className='primary alert-primary' onClick={calCurrentValueOfAll}>Update Current Value</button>
           </div>
         </div>
       </div>
@@ -293,15 +297,28 @@ function MoneyTime() {
           onClick={fetchCryptoAPI}>
           Update coins and prices
         </button>
-        <ol>
-          {topTenCoins.map((coin, index) =>
-            <li key={index}>
-              Name: {topTenCoins[index].name}.
-              ID: {topTenCoins[index].id}.
-              Current Price: { topTenCoins[index].currentPrice || 'Not available. Please update.'}
-            </li>
-          )}
-        </ol>
+
+        <div>
+          <table className="text-center table table-sm table-dark table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">ID</th>
+              <th scope="col">Current Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            {topTenCoins.map((coin, index) =>
+              <tr key={index}>
+                <th scope="row">{topTenCoins[index].name}</th>
+                <td>{topTenCoins[index].id}</td>
+                <td>{topTenCoins[index].currentPrice || 'Not available. Please update.'}</td>
+              </tr>
+            )}
+            </tbody>
+          </table>
+        </div>
+
       </div>
 
       {/*  FORM */}
@@ -310,40 +327,42 @@ function MoneyTime() {
           <p>Pick your favorite Coin:</p>
           <select value={selectedCoinId} onChange={e => setSelectedCoinId(e.target.value)}>
             {topTenCoins.map((coin, index) =>
-              <option key={index} value = {index}>{topTenCoins[index].name}</option>
+              <option key={index} value={index}>{topTenCoins[index].name}</option>
             )}
           </select>
           <label>Unit to buy: </label>
           <input type="number" name="unit" onChange={e => setUnitToBuy(e.target.value)}/>
           <button
             className='alert alert-success'
-            onClick={(e) => CalculateTotalPurchaseCost(e)}
-          >Calculate Total</button>
+            onClick={(e) => calculateTotalPurchaseCost(e)}
+          >Calculate Total
+          </button>
           <label>TotalCostToBuy: {totalCostToBuy}</label>
           <div>
             <button
               className='alert alert-danger'
               type="submit"
-            >BuyBuyBuy</button>
+            >BuyBuyBuy
+            </button>
           </div>
         </form>
       </div>
 
       {/*Transaction History*/}
       <div className="alert alert-success" role='alert'>
-        <p>Transactions History:</p>
+        <h3 className="text-center">Transactions History:</h3>
         {transactions.map((item, tranIndex) =>
           <div key={tranIndex}>
-            <h4 className='text-center'>
+            <h5 className='text-center'>
               Coin Type: {transactions[tranIndex].name},
-              Unit Owned: { calTotalUnitPerType(tranIndex) },
-              Total Paid: { calTotalPaidPerType(tranIndex) }
-            </h4>
+              Unit Owned: {calTotalUnitPerType(tranIndex)},
+              Total Paid: {calTotalPaidPerType(tranIndex)}
+            </h5>
 
-            <div className="card-container" >
+            <div className="card-container">
 
               {/* Loop in all types of coins*/}
-              { transactions[tranIndex].history.map((tran, historyIndex) =>
+              {transactions[tranIndex].history.map((tran, historyIndex) =>
                 <div className='card text-center' key={historyIndex}>
 
                   {/* Loop in all trans records in each coin*/}
@@ -351,19 +370,19 @@ function MoneyTime() {
 
                     // Render edit mode:
                     <EditCard
-                      unitToEdit = {unitToEdit}
-                      priceToEdit = {priceToEdit}
-                      handleFormUnitChange = {(e) => handleFormUnitChange(e)}
-                      handleFormPriceChange = {(e) => handleFormPriceChange(e)}
-                      onSave = {() => onSave(tranIndex, historyIndex)}
+                      unitToEdit={unitToEdit}
+                      priceToEdit={priceToEdit}
+                      handleFormUnitChange={(e) => handleFormUnitChange(e)}
+                      handleFormPriceChange={(e) => handleFormPriceChange(e)}
+                      onSave={() => onSave(tranIndex, historyIndex)}
                     />
                     :
                     //  Render normal mode:
                     <NormalCard
-                      unit = {tran.unit}
-                      purchasePrice = {tran.purchasePrice}
-                      onDelete = {() => onDelete(tranIndex, historyIndex)}
-                      onEdit = {() => onEdit(tranIndex, historyIndex)}
+                      unit={tran.unit}
+                      purchasePrice={tran.purchasePrice}
+                      onDelete={() => onDelete(tranIndex, historyIndex)}
+                      onEdit={() => onEdit(tranIndex, historyIndex)}
                     />
                   }
                 </div>
