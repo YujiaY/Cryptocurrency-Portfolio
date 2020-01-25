@@ -123,10 +123,8 @@ function MoneyTime() {
       let sum = 0;
       let idArr = [];
       transactions.forEach(tran => {
-        console.log(tran.id)
         idArr.push(tran.id);
       });
-      console.log(idArr);
 
       // Fetch current value
       const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
@@ -136,7 +134,6 @@ function MoneyTime() {
         tran.currentPrice = data[tran.id].quote.AUD.price;
         sum += calTotalUnitPerType(index) * tran.currentPrice;
       });
-
       setCurrentValueOfAll(sum);
     }
   }
@@ -214,7 +211,7 @@ function MoneyTime() {
     setUpdateTime(new Date(res.data.data[0].last_updated).toLocaleString());
   }
 
-  function calculateTotalPurchaseCost(e) {
+  function CalculateTotalPurchaseCost(e) {
     e.preventDefault();
     if (unitToBuy > 0) {
       let sum = 0;
@@ -261,11 +258,12 @@ function MoneyTime() {
 
         setTransactions(newTransactions);
       }
-
+      ;
 
     } else {
       alert('Please enter some number to BuyBuyBuy~~~');
     }
+    ;
 
   };
 
@@ -334,7 +332,7 @@ function MoneyTime() {
           <input type="number" name="unit" onChange={e => setUnitToBuy(e.target.value)}/>
           <button
             className='alert alert-success'
-            onClick={(e) => calculateTotalPurchaseCost(e)}
+            onClick={(e) => CalculateTotalPurchaseCost(e)}
           >Calculate Total
           </button>
           <label>TotalCostToBuy: {totalCostToBuy}</label>
