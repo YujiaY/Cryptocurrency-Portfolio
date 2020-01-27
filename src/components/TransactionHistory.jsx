@@ -24,7 +24,7 @@ const TransactionHistory = props => {
       sum += tran.unit * tran.purchasePrice;
     });
     return sum;
-  };
+  }
 
   function calTotalUnitPerType(index) {
     let sum = 0;
@@ -32,7 +32,7 @@ const TransactionHistory = props => {
       sum += +tran.unit;
     });
     return sum;
-  };
+  }
 
   function calTotalCostOfAll() {
     let sum = 0;
@@ -44,7 +44,7 @@ const TransactionHistory = props => {
       })
     }
     return sum;
-  };
+  }
 
   async function calCurrentValueOfAll() {
     if (transactions.length === 0) {
@@ -71,9 +71,9 @@ const TransactionHistory = props => {
     newTransactions[tranIndex].history.splice(historyIndex, 1);
     if (newTransactions[tranIndex].history.length === 0) {
       newTransactions.splice(tranIndex, 1);
-    };
+    }
     setTransactions(newTransactions);
-  };
+  }
 
   function onSave(tranIndex, historyIndex) {
     const newTransactions = [...transactions];
@@ -81,22 +81,20 @@ const TransactionHistory = props => {
     newTransactions[tranIndex].history[historyIndex].purchasePrice = priceToEdit;
     setTransactions(newTransactions);
     // Roll back to normal mode
-    setIsEditing(false)
+    setIsEditing(false);
     setEditingCardIndex([-1, -1]);
 
-  };
+  }
 
   function onEdit(tranIndex, historyIndex) {
-    console.log(tranIndex);
-    console.log(historyIndex);
     if (isEditing) {
       return alert('Please only edit one in a time.')
-    };
+    }
     setIsEditing(true);
     setEditingCardIndex([tranIndex, historyIndex]);
     setUnitToEdit(transactions[tranIndex].history[historyIndex].unit);
     setPriceToEdit(transactions[tranIndex].history[historyIndex].purchasePrice);
-  };
+  }
 
   function handleFormUnitChange(e) {
     setUnitToEdit(e.target.value);
@@ -111,7 +109,7 @@ const TransactionHistory = props => {
       .then(() => console.log('Update API call responsed.'));
   }, [transactions]);
 
-  return  (
+  return (
     <div className="alert alert-success">
       <h3 className="text-center">Transactions History:</h3>
 

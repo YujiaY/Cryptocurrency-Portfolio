@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import TransactionHistory from './TransactionHistory';
 import TopCoins from "./TopCoins";
 import PurchasePanel from "./PurchasePanel";
@@ -69,28 +69,28 @@ function MoneyTime() {
   return (
     <div className="container">
       <TopCoins
-        topTenCoins = {topTenCoins}
-        setTopTenCoins = {setTopTenCoins}
+        topTenCoins={topTenCoins}
+        setTopTenCoins={setTopTenCoins}
       />
 
       <PurchasePanel
-        setSelectedCoinId = { setSelectedCoinId }
-        selectedCoinId = { selectedCoinId }
-        topTenCoins = { topTenCoins }
-        setUnitToBuy = { setUnitToBuy }
-        totalCostToBuy = { totalCostToBuy }
-        unitToBuy = { unitToBuy }
-        setTotalCostToBuy = { setTotalCostToBuy }
-        transactions = { transactions }
-        setTransactions = { setTransactions }
+        setSelectedCoinId={setSelectedCoinId}
+        selectedCoinId={selectedCoinId}
+        topTenCoins={topTenCoins}
+        setUnitToBuy={setUnitToBuy}
+        totalCostToBuy={totalCostToBuy}
+        unitToBuy={unitToBuy}
+        setTotalCostToBuy={setTotalCostToBuy}
+        transactions={transactions}
+        setTransactions={setTransactions}
       />
 
       <TransactionHistory
-        transactions = {transactions}
-        setTransactions = { setTransactions }
+        transactions={transactions}
+        setTransactions={setTransactions}
       />
     </div>
   )
-};
+}
 
 export default MoneyTime;

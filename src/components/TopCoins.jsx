@@ -3,7 +3,7 @@ import axios from "axios";
 
 const TopCoins = props => {
 
-  const { topTenCoins, setTopTenCoins } = props;
+  const {topTenCoins, setTopTenCoins} = props;
   const [updateTime, setUpdateTime] = useState('N/A');
 
   async function fetchCryptoAPI() {
@@ -31,8 +31,8 @@ const TopCoins = props => {
       .then(() => console.log('Latest API call responsed.'))
   }, []);
 
-  return  (
-    <div  className="alert alert-success">
+  return (
+    <div className="alert alert-success">
       <h3>Top Ten Coins: (Last update at: {updateTime})</h3>
       <button
         className='primary alert-primary'

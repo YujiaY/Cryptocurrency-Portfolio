@@ -48,7 +48,7 @@ const PurchasePanel = props => {
         newTransactionsPerType.history.push({
           unit: unitToBuy,
           purchasePrice: topTenCoins[selectedCoinId].currentPrice
-        })
+        });
         const newTransactions = [
           ...transactions.slice(0, index),
           newTransactionsPerType,
@@ -59,9 +59,9 @@ const PurchasePanel = props => {
     } else {
       alert('Please enter some number to BuyBuyBuy~~~');
     }
-  };
+  }
 
-  return  (
+  return (
     <div className="alert alert-success">
       <form onSubmit={(e) => handleBuyBuyBuy(e)}>
         <p>Pick your favorite Coin:</p>
