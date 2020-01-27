@@ -1,10 +1,14 @@
 import React from 'react';
 
-const NormalCard = props => {
+const NormalCard = (props) => {
+  const {
+    unit,
+    purchasePrice,
+    onDelete,
+    onEdit,
+  } = props;
 
-  const {unit, purchasePrice, onDelete, onEdit } = props;
-
-  return  (
+  return (
     <div>
       <p>Unit: </p>
       <p>{ unit }</p>
@@ -15,15 +19,19 @@ const NormalCard = props => {
       <button
         type="button"
         className="alert alert-danger"
-        onClick={ onDelete }
-      >Delete</button>
+        onClick={onDelete}
+      >
+        Delete
+      </button>
       <button
         type="button"
         className="btn btn-primary"
-        onClick={ onEdit }
-      >Edit</button>
+        onClick={onEdit}
+      >
+        Edit
+      </button>
     </div>
-  )
+  );
 };
 
 export default NormalCard;

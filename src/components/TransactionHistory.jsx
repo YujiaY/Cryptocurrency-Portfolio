@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import EditCard from "./EditCard";
-import NormalCard from "./NormalCard";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import EditCard from './EditCard';
+import NormalCard from './NormalCard';
 
-const TransactionHistory = props => {
-
+const TransactionHistory = (props) => {
   const {
     transactions,
     setTransactions,
@@ -21,7 +20,7 @@ const TransactionHistory = props => {
 
   function calTotalPaidPerType(index) {
     let sum = 0;
-    transactions[index].history.forEach(tran => {
+    transactions[index].history.forEach((tran) => {
       sum += tran.unit * tran.purchasePrice;
     });
     return sum;
@@ -29,7 +28,7 @@ const TransactionHistory = props => {
 
   function calTotalUnitPerType(index) {
     let sum = 0;
-    transactions[index].history.forEach(tran => {
+    transactions[index].history.forEach((tran) => {
       sum += +tran.unit;
     });
     return sum;
@@ -38,35 +37,36 @@ const TransactionHistory = props => {
   function calTotalCostOfAll() {
     let sum = 0;
     if (transactions.length > 0) {
-      transactions.forEach(tran => {
-        tran.history.forEach(tran => {
-          sum += tran.unit * tran.purchasePrice;
+      transactions.forEach((tran) => {
+        tran.history.forEach((history) => {
+          sum += history.unit * history.purchasePrice;
         });
-      })
+      });
     }
     return sum;
   }
 
+  // eslint-disable-next-line consistent-return
   async function calCurrentValueOfAll() {
     if (transactions.length === 0) {
       return setCurrentValueOfAll(0);
-    } else {
-      let sum = 0;
-      let idArr = [];
-      transactions.forEach(tran => {
-        idArr.push(tran.id);
-      });
-      // Fetch current value
-      const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
-      let data = res.data.data;
-      console.log(res.data)
-      transactions.forEach((tran, index) => {
-        tran.currentPrice = data[tran.id].quote.AUD.price;
-        sum += calTotalUnitPerType(index) * tran.currentPrice;
-      });
-      setCurrentValueOfAll(sum);
-      setUpdateTime(new Date(Object.values(res.data.data)[0].last_updated).toLocaleString());
     }
+    let sum = 0;
+    const idArr = [];
+    transactions.forEach((tran) => {
+      idArr.push(tran.id);
+    });
+    // Fetch current value
+    const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
+    const { data } = res.data;
+    const newTransactions = [...transactions];
+    newTransactions.forEach((item, index) => {
+      // eslint-disable-next-line no-param-reassign
+      item.currentPrice = data[item.id].quote.AUD.price;
+      sum += calTotalUnitPerType(index) * item.currentPrice;
+    });
+    setCurrentValueOfAll(sum);
+    setUpdateTime(new Date(Object.values(res.data.data)[0].last_updated).toLocaleString());
   }
 
   function onDelete(tranIndex, historyIndex) {
@@ -88,9 +88,11 @@ const TransactionHistory = props => {
     setEditingCardIndex([-1, -1]);
   }
 
+  // eslint-disable-next-line consistent-return
   function onEdit(tranIndex, historyIndex) {
     if (isEditing) {
-      return alert('Please only edit one in a time.')
+      // eslint-disable-next-line no-undef
+      return alert('Please only edit one in a time.');
     }
     setIsEditing(true);
     setEditingCardIndex([tranIndex, historyIndex]);
@@ -118,54 +120,74 @@ const TransactionHistory = props => {
       <div className="row">
         <div className="col">
           <div className="alert alert-success">
-            <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
-            <p>And your assets are now worth: A${currentValueOfAll}. (Last updated at: {updateTime})</p>
-            <button className='primary alert-primary' onClick={calCurrentValueOfAll}>Update Current Value</button>
+            <p>
+              Total Money you have invested: A$
+              {calTotalCostOfAll()}
+            </p>
+            <p>
+              And your assets are now worth: A$
+              {currentValueOfAll}
+              . (Last updated at:
+              {updateTime}
+              )
+            </p>
+            <button
+              type="submit"
+              className="primary alert-primary"
+              onClick={calCurrentValueOfAll}
+            >
+              Update Current Value
+            </button>
           </div>
         </div>
       </div>
 
-      {transactions.map((item, tranIndex) =>
-        <div key={tranIndex}>
-          <h5 className='text-center'>
-            Coin Type: {transactions[tranIndex].name},
-            Unit Owned: {calTotalUnitPerType(tranIndex)},
-            Total Paid: {calTotalPaidPerType(tranIndex)}
+      {transactions.map((item, tranIndex) => (
+        <div key={item.name}>
+          <h5 className="text-center">
+            Coin Type:
+            {item.name}
+            ,
+            Unit Owned:
+            {calTotalUnitPerType(tranIndex)}
+            ,
+            Total Paid:
+            {calTotalPaidPerType(tranIndex)}
           </h5>
 
           <div className="card-container">
+            {/* Loop in all types of coins */}
+            {/* eslint-disable-next-line react/no-array-index-key */}
+            {transactions[tranIndex].history.map((tran, historyIndex) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <div className="card text-center" key={historyIndex}>
 
-            {/* Loop in all types of coins*/}
-            {transactions[tranIndex].history.map((tran, historyIndex) =>
-              <div className='card text-center' key={historyIndex}>
-
-                {/* Loop in all trans records in each coin*/}
-                {(tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1]) ?
-
-                  // Render edit mode:
-                  <EditCard
-                    unitToEdit={unitToEdit}
-                    priceToEdit={priceToEdit}
-                    handleFormUnitChange={(e) => handleFormUnitChange(e)}
-                    handleFormPriceChange={(e) => handleFormPriceChange(e)}
-                    onSave={() => onSave(tranIndex, historyIndex)}
-                  />
-                  :
-                  //  Render normal mode:
-                  <NormalCard
-                    unit={tran.unit}
-                    purchasePrice={tran.purchasePrice}
-                    onDelete={() => onDelete(tranIndex, historyIndex)}
-                    onEdit={() => onEdit(tranIndex, historyIndex)}
-                  />
-                }
+                {/* Loop in all trans records in each coin */}
+                {(tranIndex === editingCardIndex[0] && historyIndex === editingCardIndex[1])
+                  ? (
+                    <EditCard
+                      unitToEdit={unitToEdit}
+                      priceToEdit={priceToEdit}
+                      handleFormUnitChange={(e) => handleFormUnitChange(e)}
+                      handleFormPriceChange={(e) => handleFormPriceChange(e)}
+                      onSave={() => onSave(tranIndex, historyIndex)}
+                    />
+                  )
+                  : (
+                    <NormalCard
+                      unit={tran.unit}
+                      purchasePrice={tran.purchasePrice}
+                      onDelete={() => onDelete(tranIndex, historyIndex)}
+                      onEdit={() => onEdit(tranIndex, historyIndex)}
+                    />
+                  )}
               </div>
-            )}
+            ))}
           </div>
         </div>
-      )}
+      ))}
     </div>
-  )
+  );
 };
 
 export default TransactionHistory;
