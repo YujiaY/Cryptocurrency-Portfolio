@@ -17,6 +17,7 @@ const TransactionHistory = props => {
   const [priceToEdit, setPriceToEdit] = useState(null);
   // For updating current value
   const [currentValueOfAll, setCurrentValueOfAll] = useState('N/A');
+  const [updateTime, setUpdateTime] = useState('N/A');
 
   function calTotalPaidPerType(index) {
     let sum = 0;
@@ -58,11 +59,13 @@ const TransactionHistory = props => {
       // Fetch current value
       const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
       let data = res.data.data;
+      console.log(res.data)
       transactions.forEach((tran, index) => {
         tran.currentPrice = data[tran.id].quote.AUD.price;
         sum += calTotalUnitPerType(index) * tran.currentPrice;
       });
       setCurrentValueOfAll(sum);
+      setUpdateTime(new Date(Object.values(res.data.data)[0].last_updated).toLocaleString());
     }
   }
 
@@ -83,7 +86,6 @@ const TransactionHistory = props => {
     // Roll back to normal mode
     setIsEditing(false);
     setEditingCardIndex([-1, -1]);
-
   }
 
   function onEdit(tranIndex, historyIndex) {
@@ -117,7 +119,7 @@ const TransactionHistory = props => {
         <div className="col">
           <div className="alert alert-success">
             <p>Total Money you have invested: A${calTotalCostOfAll()}. </p>
-            <p>And your assets are now worth: A${currentValueOfAll}. </p>
+            <p>And your assets are now worth: A${currentValueOfAll}. (Last updated at: {updateTime})</p>
             <button className='primary alert-primary' onClick={calCurrentValueOfAll}>Update Current Value</button>
           </div>
         </div>

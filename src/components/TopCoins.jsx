@@ -33,7 +33,7 @@ const TopCoins = props => {
 
   return (
     <div className="alert alert-success">
-      <h3>Top Ten Coins: (Last update at: {updateTime})</h3>
+      <h3>Top Ten Coins: (Last updated at: {updateTime})</h3>
       <button
         className='primary alert-primary'
         onClick={fetchCryptoAPI}>
