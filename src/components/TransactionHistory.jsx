@@ -59,8 +59,7 @@ const TransactionHistory = (props) => {
     // Fetch current value
     const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
     const { data } = res.data;
-    const newTransactions = [...transactions];
-    newTransactions.forEach((item, index) => {
+    transactions.forEach((item, index) => {
       // eslint-disable-next-line no-param-reassign
       item.currentPrice = data[item.id].quote.AUD.price;
       sum += calTotalUnitPerType(index) * item.currentPrice;
