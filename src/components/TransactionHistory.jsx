@@ -59,13 +59,14 @@ const TransactionHistory = (props) => {
     // Fetch current value
     const res = await axios.get(`http://localhost:1368/current?idArr=${idArr}`);
     const { data } = res.data;
-    transactions.forEach((item, index) => {
+    const newTransaction = [...transactions];
+    newTransaction.forEach((item, index) => {
       // eslint-disable-next-line no-param-reassign
       item.currentPrice = data[item.id].quote.AUD.price;
       sum += calTotalUnitPerType(index) * item.currentPrice;
     });
     setCurrentValueOfAll(sum);
-    setUpdateTime(new Date(Object.values(res.data.data)[0].last_updated).toLocaleString());
+    setUpdateTime(new Date(Object.values(data)[0].last_updated).toLocaleString());
   }
 
   function onDelete(tranIndex, historyIndex) {
